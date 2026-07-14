@@ -774,12 +774,22 @@ function uid(){ return 'id' + Math.random().toString(36).slice(2,9); }
 
 /* ============ STORAGE ============ */
 function loadKey(key, fallback){
-  return window.storage.get(key, false).then(function(r){
-    return r && r.value ? JSON.parse(r.value) : fallback;
-  }).catch(function(){ return fallback; });
+  return new Promise(function(resolve){
+    try{
+      var raw = window.localStorage.getItem(key);
+      resolve(raw ? JSON.parse(raw) : fallback);
+    }catch(e){
+      resolve(fallback);
+    }
+  });
 }
 function saveKey(key, value){
-  return window.storage.set(key, JSON.stringify(value), false).catch(function(){});
+  return new Promise(function(resolve){
+    try{
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }catch(e){}
+    resolve();
+  });
 }
 
 function loadAll(){
